@@ -39,9 +39,9 @@ func main() {
 	//path file
 	e.Static("/uploads", "./uploads") // add this code
 
-	port := os.Getenv("PORT")
+	var port = os.Getenv("PORT")
 
-	fmt.Println("Server starting", port)
+	fmt.Println("Server running localhost", port)
 	e.Logger.Fatal(e.Start(":" + port))
 	// e.Logger.Fatal(e.Start("localhost:5000"))
 }

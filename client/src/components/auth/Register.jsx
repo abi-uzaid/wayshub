@@ -16,68 +16,51 @@ import { useMutation } from "react-query";
 
 import { API } from "../../config/api";
 import Swal from "sweetalert2";
-
+import axios from "axios";
 
 const Register = (props) => {
-const [form, setForm] = useState({
-  name: "",
-  email: "",
-  password: "",
-});
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [channelName, setChannelName] = useState("");
+  const [description, setDescription] = useState("");
 
-const { email, password } = form;
+  const handleSubmit = useMutation(async (e) => {
+    try {
+      e.preventDefault();
 
-const handleSubmit = useMutation(async (e) => {
-  try {
-    e.preventDefault();
+      const responseBackend = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}/register`,
+        {
+          channelName: channelName,
+          email: email,
+          password: password,
+          description: description,
+        }
+      );
 
-    // Configuration Content-type
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-      },
-    };
+      if (responseBackend.data.code === "success") {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Success",
+          showConfirmButton: false,
+          timer: 1500,
+        });
 
-    // Data body
-    const body = JSON.stringify(form);
+        navigate("/login");
+      }
 
-    // Insert data user to database
-    const response = await API.post("/register", body, config);
-
-    Swal.fire({
-      position: "center",
-      icon: "success",
-      title: "Success",
-      showConfirmButton: false,
-      timer: 1500,
-    });
-
-    setForm({
-      name: "",
-      email: "",
-      password: "",
-    });
-
-    // Handling response here
-  } catch (error) {
-  //   const alert = (
-  //     <Alert variant="danger" className="py-1">
-  //       Failed
-  //     </Alert>
-  //   );
-  //   setMessage(alert);
-  //   console.log(error);
-  // }
-  Swal.fire({
-    position: "center",
-    icon: "error",
-    title: "Failed",
-    showConfirmButton: false,
-    timer: 1500,
+      // Handling response here
+    } catch (error) {
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Failed",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
   });
-}
-});
-
 
   const navigate = useNavigate();
 
@@ -131,6 +114,9 @@ const handleSubmit = useMutation(async (e) => {
                     }}
                     type="email"
                     placeholder="Email"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
                   />
                 </Form.Group>
 
@@ -145,6 +131,9 @@ const handleSubmit = useMutation(async (e) => {
                     }}
                     type="password"
                     placeholder="Password"
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
                   />
                 </Form.Group>
 
@@ -159,6 +148,9 @@ const handleSubmit = useMutation(async (e) => {
                     }}
                     type="text"
                     placeholder="Channel Name"
+                    onChange={(e) => {
+                      setChannelName(e.target.value);
+                    }}
                   />
                 </Form.Group>
 
@@ -175,6 +167,9 @@ const handleSubmit = useMutation(async (e) => {
                     as="textarea"
                     rows={3}
                     placeholder="Channel Description"
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                    }}
                   />
                 </Form.Group>
 
@@ -203,5 +198,5 @@ const handleSubmit = useMutation(async (e) => {
       </Container>
     </>
   );
-}
+};
 export default Register;

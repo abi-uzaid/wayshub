@@ -14,7 +14,7 @@ func ChannelRoutes(e *echo.Group) {
 	h := handlers.NewHandlerChannel(channelRepository)
 
 	e.GET("/channels", middleware.Auth(h.FindChannels))
-	e.GET("/channel/{id}", middleware.Auth(h.GetChannel))
-	e.PATCH("/channel/{id}", middleware.Auth((middleware.UploadPhoto(middleware.UploadCover(h.EditChannel)))))
-	e.DELETE("/channel/{id}", middleware.Auth(h.DeleteChannel))
+	e.GET("/channel/:id", middleware.Auth(h.GetChannel))
+	e.PATCH("/channel", middleware.Auth((middleware.UploadPhoto(middleware.UploadCover(h.EditChannel)))))
+	e.DELETE("/channel/:id", middleware.Auth(h.DeleteChannel))
 }

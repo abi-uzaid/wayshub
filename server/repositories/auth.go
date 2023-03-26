@@ -31,7 +31,7 @@ func (r *repository) Login(email string) (models.Channel, error) {
 
 func (r *repository) Getchannel(ID int) (models.Channel, error) {
 	var channel models.Channel
-	err := r.db.First(&channel, ID).Error
+	err := r.db.Preload("Videos").First(&channel, ID).Error
 
 	return channel, err
 }

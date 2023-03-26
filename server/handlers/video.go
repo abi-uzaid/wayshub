@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"strconv"
@@ -10,7 +11,10 @@ import (
 	"wayshub/models"
 	"wayshub/repositories"
 
+	"github.com/cloudinary/cloudinary-go"
+	"github.com/cloudinary/cloudinary-go/api/uploader"
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -23,6 +27,8 @@ func HandlerVideo(VideoRepository repositories.VideoRepository) *handlerVideo {
 }
 
 func (h *handlerVideo) AddVideo(c echo.Context) error {
+	userInfo := c.Get("userInfo")
+	channelID := userInfo.(jwt.MapClaims)["id"].(float64)
 
 	// Get dataFile from midleware and store to filethumbnail variable here ...
 	dataContex := c.Get("dataThumbnail")
@@ -42,12 +48,34 @@ func (h *handlerVideo) AddVideo(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()})
 	}
 
+	var ctx = context.Background()
+	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	var API_KEY = os.Getenv("API_KEY")
+	var API_SECRET = os.Getenv("API_SECRET")
+
+	// Add your Cloudinary credentials ...
+	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+
+	// Upload file to Cloudinary ...
+	resp, err := cld.Upload.Upload(ctx, filethumbnail, uploader.UploadParams{Folder: "wayshub"})
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()})
+	}
+	// Upload file to Cloudinary ...
+	respVideo, err := cld.Upload.Upload(ctx, filevideo, uploader.UploadParams{Folder: "wayshub"})
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()})
+	}
+
 	video := models.Video{
 		Title:       request.Title,
-		Thumbnail:   filethumbnail,
+		Thumbnail:   resp.SecureURL,
 		Description: request.Description,
-		Video:       filevideo,
+		Video:       respVideo.SecureURL,
 		CreatedAt:   time.Now(),
+		ChannelID:   int(channelID),
 	}
 
 	video, err = h.VideoRepository.AddVideo(video)
@@ -83,14 +111,7 @@ func (h *handlerVideo) GetVideo(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()})
 	}
 
-	video.Video = os.Getenv("PATH_FILE") + video.Video
-
-	videos, err := h.VideoRepository.GetVideo(id)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
-	}
-
-	return c.JSON(http.StatusOK, dto.SuccessResult{Code: "success", Data: videos})
+	return c.JSON(http.StatusOK, dto.SuccessResult{Code: "success", Data: video})
 }
 
 func (h *handlerVideo) EditVideo(c echo.Context) error {

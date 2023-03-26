@@ -32,17 +32,18 @@ func UploadVideo(next echo.HandlerFunc) echo.HandlerFunc {
 		// fmt.Printf("File Size: %+v\n", handler.Size)
 		// fmt.Printf("MIME Header: %+v\n", handler.Header)
 
-		// const MAX_UPLOAD_SIZE = 10 << 20 // 10MB
+		// const MAX_UPLOAD_SIZE = 5 * 1024 * 1024 // 5MB
 
-		// Parse our multipart form, 10 << 20 specifies a maximum
-		// upload of 10 MB files.
+		// // Parse our multipart form, 5 * 1024 * 1024 specifies a maximum
+		// // upload of 5 MB files.
+		// r := c.Request()
+		// w := c.Response().Writer
 
 		// r.ParseMultipartForm(MAX_UPLOAD_SIZE)
 		// if r.ContentLength > MAX_UPLOAD_SIZE {
 		// 	w.WriteHeader(http.StatusBadRequest)
-		// 	response := Result{Code: http.StatusBadRequest, Message: "Max size in 1mb"}
-		// 	json.NewEncoder(w).Encode(response)
-		// 	return
+		// 	response := Result{Code: http.StatusBadRequest, Message: "Max size is 5mb"}
+		// 	return c.JSON(http.StatusBadRequest, response)
 		// }
 
 		// Create a temporary file within our temp-images directory that follows
@@ -50,10 +51,12 @@ func UploadVideo(next echo.HandlerFunc) echo.HandlerFunc {
 
 		ext := strings.ToLower(filepath.Ext(file.Filename))
 		if ext != ".mp4" && ext != ".avi" && ext != ".mkv" {
-			return c.JSON(http.StatusBadRequest, "Ebueeseeeettt dah itu bukan FOTO neng")
+			return c.JSON(http.StatusBadRequest, "Ebueeseeeettt dah itu bukan Video neng")
 		}
 
-		tempFile, err := ioutil.TempFile("uploads/videos", "video-*.mp4")
+		filename := "video-*" + ext
+
+		tempFile, err := ioutil.TempFile("uploads/videos", filename)
 		if err != nil {
 			// fmt.Println(err)
 			// fmt.Println("path upload error")
@@ -75,9 +78,9 @@ func UploadVideo(next echo.HandlerFunc) echo.HandlerFunc {
 		// tempFile.Write(fileBytes)
 
 		data := tempFile.Name()
-		filevideo := data[15:] // split uploads/
+		// filevideo := data[15:] // split uploads/
 
-		c.Set("dataVideo", filevideo)
+		c.Set("dataVideo", data)
 		return next(c)
 	}
 }

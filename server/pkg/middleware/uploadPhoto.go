@@ -30,18 +30,19 @@ func UploadPhoto(next echo.HandlerFunc) echo.HandlerFunc {
 		// fmt.Printf("File Size: %+v\n", handler.Size)
 		// fmt.Printf("MIME Header: %+v\n", handler.Header)
 
-		// const MAX_UPLOAD_SIZE = 10 << 20 // 10MB
+		const MAX_UPLOAD_SIZE = 10 * 1024 * 1024 // 10MB
 
-		// Parse our multipart form, 10 << 20 specifies a maximum
+		// Parse our multipart form, 10 * 1024 * 1024 specifies a maximum
 		// upload of 10 MB files.
+		r := c.Request()
+		w := c.Response().Writer
 
-		// r.ParseMultipartForm(MAX_UPLOAD_SIZE)
-		// if r.ContentLength > MAX_UPLOAD_SIZE {
-		// 	w.WriteHeader(http.StatusBadRequest)
-		// 	response := Result{Code: http.StatusBadRequest, Message: "Max size in 1mb"}
-		// 	json.NewEncoder(w).Encode(response)
-		// 	return
-		// }
+		r.ParseMultipartForm(MAX_UPLOAD_SIZE)
+		if r.ContentLength > MAX_UPLOAD_SIZE {
+			w.WriteHeader(http.StatusBadRequest)
+			response := Result{Code: http.StatusBadRequest, Message: "Max size is 10mb"}
+			return c.JSON(http.StatusBadRequest, response)
+		}
 
 		// Create a temporary file within our temp-images directory that follows
 		// a particular naming pattern
@@ -50,7 +51,8 @@ func UploadPhoto(next echo.HandlerFunc) echo.HandlerFunc {
 		if ext != ".png" && ext != ".jpg" && ext != ".jpeg" {
 			return c.JSON(http.StatusBadRequest, "Ebueeseeeettt dah itu bukan FOTO neng")
 		}
-		tempFile, err := ioutil.TempFile("uploads/photos", "photo-*.png")
+		filename := "photo-*" + ext
+		tempFile, err := ioutil.TempFile("uploads/photos", filename)
 		if err != nil {
 			// fmt.Println(err)
 			// fmt.Println("path upload error")
@@ -72,9 +74,9 @@ func UploadPhoto(next echo.HandlerFunc) echo.HandlerFunc {
 		// tempFile.Write(fileBytes)
 
 		data := tempFile.Name()
-		filephoto := data[15:] // split uploads/
+		// filephoto := data[15:] // split uploads/
 
-		c.Set("dataPhoto", filephoto)
+		c.Set("dataPhoto", data)
 		return next(c)
 
 	}

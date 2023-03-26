@@ -12,6 +12,7 @@ type Channel struct {
 	Description string    `gorm:"type: varchar(255)" json:"description"`
 	CreatedAt   time.Time `json:"-"`
 	UpdatedAt   time.Time `json:"-"`
+	Videos      []Video   `gorm:"foreignKey:ChannelID" json:"videos"` // the associated Video objects
 }
 
 type ChannelResponse struct {

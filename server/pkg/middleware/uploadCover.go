@@ -53,7 +53,8 @@ func UploadCover(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, "Ebueeseeeettt dah itu bukan FOTO neng")
 		}
 
-		tempFile, err := ioutil.TempFile("uploads/covers", "cover-*.png")
+		filename := "cover-*" + ext
+		tempFile, err := ioutil.TempFile("uploads/covers", filename)
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println("path upload error")
@@ -75,9 +76,9 @@ func UploadCover(next echo.HandlerFunc) echo.HandlerFunc {
 		// tempFile.Write(fileBytes)
 
 		data := tempFile.Name()
-		filecover := data[15:] // split uploads/
+		// filecover := data[15:] // split uploads/
 
-		c.Set("dataCover", filecover)
+		c.Set("dataCover", data)
 		return next(c)
 
 	}

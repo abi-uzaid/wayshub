@@ -15,5 +15,5 @@ func SubscriptionRoutes(e *echo.Group) {
 
 	e.POST("/subscribe", middleware.Auth(h.AddSubscription))
 	e.GET("/subscribe", middleware.Auth(h.GetSubscription))
-	e.DELETE("/channel/{id}/subscribe/{id}", middleware.Auth(h.Unsubscribe))
+	e.DELETE("/channel/:id/subscribe/:id", middleware.Auth(h.Unsubscribe))
 }

@@ -119,6 +119,10 @@ func (h *handlerAuth) CheckAuth(c echo.Context) error {
 		ID:          channel.ID,
 		Channelname: channel.Channelname,
 		Email:       channel.Email,
+		Photo:       channel.Photo,
+		Description: channel.Description,
+		Cover:       channel.Cover,
+		Videos:      channel.Videos,
 	}
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: "success", Data: CheckAuthResponse})
 }

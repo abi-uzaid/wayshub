@@ -20,14 +20,14 @@ func RepositoryVideo(db *gorm.DB) *repository {
 
 func (r *repository) FindVideos() ([]models.Video, error) {
 	var videos []models.Video
-	err := r.db.Find(&videos).Error
+	err := r.db.Preload("Channel").Find(&videos).Error
 
 	return videos, err
 }
 
 func (r *repository) GetVideo(ID int) (models.Video, error) {
 	var video models.Video
-	err := r.db.First(&video, ID).Error
+	err := r.db.Preload("Channel").First(&video, ID).Error
 
 	return video, err
 }

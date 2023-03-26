@@ -14,8 +14,8 @@ func VideoRoutes(e *echo.Group) {
 	h := handlers.HandlerVideo(videoRepository)
 
 	e.GET("/videos", middleware.Auth(h.FindVideos))
-	e.GET("/video/{id}", middleware.Auth(h.GetVideo))
+	e.GET("/video/:id", middleware.Auth(h.GetVideo))
 	e.POST("/video", middleware.Auth(middleware.UploadThumbnail(middleware.UploadVideo(h.AddVideo))))
-	e.PATCH("/video/{id}", middleware.Auth(middleware.UploadThumbnail(middleware.UploadVideo(h.EditVideo))))
-	e.DELETE("/video/{id}", middleware.Auth(h.DeleteVideo))
+	e.PATCH("/video/:id", middleware.Auth(middleware.UploadThumbnail(middleware.UploadVideo(h.EditVideo))))
+	e.DELETE("/video/:id", middleware.Auth(h.DeleteVideo))
 }

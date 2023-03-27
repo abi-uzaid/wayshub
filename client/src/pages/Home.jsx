@@ -37,7 +37,8 @@ function VideoList() {
                 <Stack direction="vertical">
                   <Image
                     src={item.thumbnail ? item.thumbnail : Thumbnail1}
-                    className="mb-2"
+                    className="mb-2 h-4"
+                    height="140"
                   />
                   <Card.Text
                     className="text-white mb-3"

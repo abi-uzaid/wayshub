@@ -42,12 +42,6 @@ func (h *handlerSubscription) AddSubscription(c echo.Context) error {
 	// fmt.Println(subscription)
 
 	subscription, _ = h.SubscriptionRepository.AddSubscription(subscription)
-	// if err != nil {
-	// 	w.WriteHeader(http.StatusInternalServerError)
-	// 	response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
-	// 	json.NewEncoder(w).Encode(response)
-	// 	return
-	// }
 
 	subscription, _ = h.SubscriptionRepository.GetSubscription(subscription.ID)
 
